@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>cathleen.li</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">cathleen.li </a></h1>
+                <nav><ul>
+    
+                        <li><a href="/pages/about.html">about</a></li>
+                    <li><a href="/category/writing.html">writing</a></li>
+                </ul>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/2015/how_to_scrape_school_data.html">HOW TO SCRAPE SCHOOL AND DISTRICT DATA</a></h1>
+<footer class="post-info">
+        <span>Wed 01 July 2015</span>
+
+</footer><!-- /.post-info --><p>When working with school and district level data to evaluate student learning there are a lot of factors that could influence these variables. For example, the socioeconomic makeup of the school could impact student learning. The percentage of students qualifying for free reduced lunch is often used as a proxy for this information. This data is publicly available on the NCES website, but in a difficult to extract format. In order to get the data for a large number of schools, we have to use scrapping methods . Below is an example of application using BeautifulSoup. This starts with a csv file with nces id for districts but can be manipulated to feed in district name parameter instead.</p>
+<p>Here are some libraries you will need to import</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="kn">import</span> <span class="nn">requests</span> 
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="c1"># be polite to nces and sleep between pages</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+</pre></div>
+
+
+<p>As well as some helpful functions for scrapping the data </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fetch_district</span><span class="p">(</span><span class="n">district_id</span><span class="p">):</span>
+    <span class="c1">#fetches the search links and names of districts from which we can retrieve school level data</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://nces.ed.gov/ccd/districtsearch/district_detail.asp?ID2=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">district_id</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;District Name:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">font</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s2">&quot;font&quot;</span><span class="p">))]</span>
+    <span class="n">districts</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">font</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">sublinks</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">font</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">])</span> <span class="c1">#need to edit so that it calls the link rather than the tedxt</span>
+    <span class="n">links</span><span class="o">=</span><span class="s1">&#39;http://nces.ed.gov/ccd&#39;</span><span class="o">+</span><span class="n">sublinks</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">districts</span><span class="p">,</span> <span class="n">links</span>
+
+<span class="p">:::</span><span class="n">python</span>
+<span class="k">def</span> <span class="nf">find_school</span><span class="p">(</span><span class="n">district</span><span class="p">,</span><span class="n">link</span><span class="p">):</span>
+    <span class="c1">#argument: pass through the district search link</span>
+    <span class="c1">#retrieves the school links and names for all the schools in district</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;School Name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">))]</span>
+    <span class="n">full_links</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;http://nces.ed.gov/ccd/schoolsearch/&#39;</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]</span>
+    <span class="n">names</span><span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]</span>
+    <span class="n">nexttrue</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;Next &gt;&gt;&quot;</span>
+    <span class="c1"># if last element of link is a next page, recursive function call</span>
+    <span class="k">if</span> <span class="n">nexttrue</span><span class="p">:</span>
+        <span class="n">nextlink</span><span class="o">=</span><span class="s1">&#39;http://nces.ed.gov/ccd/schoolsearch/&#39;</span><span class="o">+</span><span class="n">links</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">full_links</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">nextschools</span><span class="o">=</span><span class="n">find_school</span><span class="p">(</span><span class="n">district</span><span class="p">,</span><span class="n">nextlink</span><span class="p">)</span>
+        <span class="n">full_links</span><span class="o">=</span><span class="n">full_links</span><span class="o">+</span><span class="n">nextschools</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="o">+</span><span class="n">nextschools</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1">#return links and names</span>
+    <span class="k">del</span> <span class="n">full_links</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">full_links</span><span class="p">,</span> <span class="n">names</span>
+
+<span class="k">def</span> <span class="nf">fetch_school</span><span class="p">(</span><span class="n">school_id</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://nces.ed.gov/ccd/schoolsearch/school_detail.asp?ID=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">school_id</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Total Students:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">td</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;td&#39;</span><span class="p">]</span>
+    <span class="n">students</span> <span class="o">=</span> <span class="n">td</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Free lunch eligible: &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">td</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+    <span class="n">free</span> <span class="o">=</span> <span class="n">td</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Reduced-price lunch eligible: &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">td</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+    <span class="n">reduced</span> <span class="o">=</span> <span class="n">td</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Title I School:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">td</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+    <span class="n">title1</span> <span class="o">=</span> <span class="n">td</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Yes&quot;</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>         
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Mailing Address:&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;br&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">return</span> <span class="n">students</span><span class="p">,</span> <span class="n">free</span><span class="p">,</span> <span class="n">reduced</span><span class="p">,</span> <span class="n">title1</span><span class="p">,</span> <span class="n">address</span>
+
+<span class="k">def</span> <span class="nf">extract_school_nces</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="c1">#function to extract school nces from a string</span>
+    <span class="n">code_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;&amp;ID&quot;</span><span class="p">)</span><span class="o">+</span><span class="mi">4</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">index</span><span class="p">:</span><span class="n">index</span><span class="o">+</span><span class="mi">13</span><span class="p">]</span>  <span class="c1">#nces code has 13 numbers</span>
+        <span class="n">code_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">code_list</span>
+</pre></div>
+
+
+<p>And other functions to open and write flat files:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">csv_open</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+    <span class="c1">#opens a csv file with one column </span>
+    <span class="c1">#Argument: file = a string with the csv file name </span>
+    <span class="c1">#Output: an array with the csv file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s1">&#39;rU&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="n">csvobject</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csvobject</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">array</span>
+
+<span class="c1"># Write csv file. </span>
+<span class="c1"># If necessary first - zip together list </span>
+<span class="c1"># Then push row to object and write the rows </span>
+<span class="c1"># If in list form, use write_csv , otherwise  use csv_export</span>
+<span class="k">def</span> <span class="nf">csv_export</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span><span class="n">rows</span><span class="p">):</span>
+    <span class="c1"># export rows as file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">writerows</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="n">rows</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">writerows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+    <span class="c1"># push rows into object </span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ziparray</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
+    <span class="c1">#zip together lists for export</span>
+    <span class="n">ziplist</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">)</span> <span class="p">]</span>
+    <span class="k">return</span> <span class="n">ziplist</span>
+
+<span class="k">def</span> <span class="nf">write_csv</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
+    <span class="c1">#call previous functions to write csv</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">ziparray</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">)</span>
+    <span class="n">csv_export</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span><span class="n">rows</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Given a set of nces id for districts, the below script fetches data relevant data for each school.</p>
+<div class="highlight"><pre><span></span><span class="n">district_nces</span> <span class="o">=</span> <span class="n">csv_open</span><span class="p">(</span><span class="s2">&quot;sample_nces.csv&quot;</span><span class="p">)</span>
+
+<span class="n">dist_mat</span> <span class="o">=</span><span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">district_nces</span><span class="p">:</span>
+    <span class="n">district</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span> <span class="c1">#try to fetch district</span>
+        <span class="n">d_array</span> <span class="o">=</span> <span class="n">fetch_district</span><span class="p">(</span><span class="n">district</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span> <span class="c1">#if the code does not work</span>
+        <span class="k">pass</span>
+    <span class="n">d_name</span> <span class="o">=</span> <span class="n">d_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">d_link</span> <span class="o">=</span> <span class="n">d_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># find the array of schools assocated with that district</span>
+    <span class="n">sch_array</span> <span class="o">=</span> <span class="n">find_school</span><span class="p">(</span><span class="n">d_name</span><span class="p">,</span><span class="n">d_link</span><span class="p">)</span>
+    <span class="n">sch_links</span> <span class="o">=</span> <span class="n">sch_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">sch_name</span> <span class="o">=</span> <span class="n">sch_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sch_nces</span> <span class="o">=</span> <span class="n">extract_school_nces</span><span class="p">(</span><span class="n">sch_links</span><span class="p">)</span>
+    <span class="n">sch_mat</span> <span class="o">=</span> <span class="n">ziparray</span><span class="p">(</span><span class="n">sch_nces</span><span class="p">,</span><span class="n">sch_links</span><span class="p">,</span><span class="n">sch_name</span><span class="p">)</span>
+    <span class="c1">#push district data to each row</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sch_mat</span><span class="p">:</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_name</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_link</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">district</span><span class="p">)</span>
+    <span class="c1">#push school data to amtrix </span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sch_mat</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sch</span> <span class="o">=</span> <span class="n">fetch_school</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sch</span><span class="p">:</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="c1">#push data to district matrix</span>
+        <span class="n">dist_mat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="c1">#append the district data to matrix </span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">#convert unicode to ascii which can be exported </span>
+<span class="n">rowindex</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dist_mat</span><span class="p">:</span>
+    <span class="n">colindex</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="nb">unicode</span><span class="p">):</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">colindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">,</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+        <span class="n">colindex</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="n">rowindex</span><span class="o">+=</span><span class="mi">1</span>
+
+<span class="n">csv_export</span><span class="p">(</span><span class="s2">&quot;district_nces_scrape_output.csv&quot;</span><span class="p">,</span><span class="n">dist_mat</span><span class="p">)</span>
+</pre></div>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/2015/aa_before_ab_testing.html" rel="bookmark"
+                           title="Permalink to A/A Before A/B">A/A Before A/B</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>Sun 01 February 2015</span>
+
+</footer><!-- /.post-info -->                <h2>WHY YOU SHOULD ALWAYS START A/B TESTING WITH A/A TESTING</h2>
+<p>Earlier, we talked about how an A/B testing framework can be used to better understand and improve technology-based learning for students. A/B testing creates two slightly different designs (for example one with a green background and ...</p>
+                <a class="readmore" href="/2015/aa_before_ab_testing.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+        <!--  -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="http://github.com/catli">github</a></li>
+                            <li><a href="http://www.linkedin.com/in/cathleenli">linkedin</a></li>
+                            <li><a href="http://twitter.com/catlichatter">twitter</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
