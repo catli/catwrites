@@ -18,7 +18,9 @@
 /***** Global *****/
 /* Body */
 body {
-    background: #f2f3f3;
+	background-image: url('../images/colors.jpg');
+	background-size: 500px 1000px;
+    /*background: #f2f3f3;*/
     color: #000305;
     font-size: 87.5%; /* Base font size: 14px */
     font-family: 'Trebuchet MS', Trebuchet, 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -276,7 +278,8 @@ img.left, figure.left {float: left; margin: 0 2em 2em 0;}
 	Featured
 *****************/
 #featured {
-	background: #fff;
+	background: whitesmoke;
+	/*background: #fff;*/
 	margin-bottom: 2em;
 	overflow: hidden;
 	padding: 20px;
@@ -305,7 +308,8 @@ img.left, figure.left {float: left; margin: 0 2em 2em 0;}
 	Body
 *****************/
 #content {
-	background: #fff;
+	background: whitesmoke;
+	/*background: #fff;*/
 	/*margin-bottom: 2em;*/
 	overflow: hidden;
 	padding: 20px 20px;
@@ -350,31 +354,28 @@ img.left, figure.left {float: left; margin: 0 2em 2em 0;}
 #extras a:hover, #extras a:active {background: #008db8; color: #fff;}
 
 	/* Blogroll */
-	#extras .blogroll {
+/*	#extras .blogroll {
 		float: left;
 		width: 615px;
 	}
 	
 	#extras .blogroll li {float: left; margin: 0 20px 0 0; width: 185px;}
-	
+*/	
 	/* Social */
 	#extras .social {
 		float: left;
-		width: 615px;
-		padding-left: 20px;
-		padding-top: 5px;
+		width: 100px;
+		padding-left: 25px;
 	}
 	
 	#extras div[class='social'] a {
-		float: left ;
-		width: 100px;
 		background-repeat: no-repeat;
 		background-position: 3px 6px;
 		padding-left: 25px;
 	}
 	
 		/* Icons */
-		#extras .social a {background-size: 18px;}
+		#extras .social a {background-size: 18px; padding-left: 25px; float: left;}
 		#extras .social a[href*='facebook.com'] {background-image: url('../images/icons/facebook.png');}
 		#extras .social a[href*='github.com'], 
 		#extras .social a[href*='git.io'] {background-image: url('../images/icons/github.png');}
@@ -395,6 +396,7 @@ img.left, figure.left {float: left; margin: 0 2em 2em 0;}
 #contentinfo a {font-weight: bold;}
 
 /***** Sections *****/
+
 /* Blog */
 .hentry {
 	display: block;
@@ -476,3 +478,4 @@ li:last-child .hentry, #content > .hentry {border: 0; margin: 0;}
 	
 	#add-comment input[type='submit'] {float: right; margin: 0 .5em;}
 	#add-comment * {margin-bottom: .5em;}
+

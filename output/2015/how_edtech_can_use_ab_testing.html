@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>How Education Technology can Measure Learning with A/B Testing?</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">cathleen.li </a></h1>
+                <nav><ul>
+    
+                        <li><a href="/pages/about.html">about</a></li>
+    
+                        <li><a href="/pages/projects.html">projects</a></li>
+                    <li class="active"><a href="/category/writing.html">writing</a></li>
+                </ul>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/2015/how_edtech_can_use_ab_testing.html" rel="bookmark"
+           title="Permalink to How Education Technology can Measure Learning with A/B Testing?">How Education Technology can Measure Learning with A/B Testing?</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Sun 01 February 2015</span>
+<span>| tags: <a href="/tag/edtech.html">Edtech</a><a href="/tag/ab-testing.html">AB Testing</a><a href="/tag/learning.html">Learning</a><a href="/tag/efficacy.html">Efficacy</a><a href="/tag/aa-testing.html">AA Testing</a></span>
+</footer><!-- /.post-info -->      <p>Whereas educational studies have traditionally been large-scaled controlled experiments, internet technology has introduced fast-cycled approaches to efficacy testing. Education technology can be the intersection where the theoretical under-pinning of educational experiments can be combined with the faster-cycled approaches of such approaches as A/B Testing. </p>
+<p>A/B Testing is a relatively new, but powerful, approach that’s been widely adopted by technology companies to understand the interaction between their users and their web apps. With greater emphasis on differentiating learning tool for students using technology, A/B testing may be a way for us to test new approaches and efficacy for specific segments of populations. </p>
+<p>One challenge though with implementing A/B Testing is understanding how to translate a hypothesis into tests that isolate the relevant independent variable. With most other internet technology A/B Testing, the hypothesis are quite simple, and the environment relatively controlled. For example, this is the case if we're looking at whether users are more like to click on a button a few pixels bigger. However, with education and learning, the factors of influence are quite varied and the way the content can impact the outcome is complex. Therefore, if one has a theory, for example that students are more likely to learn a skill if the app frames the goals and the purpose of the lesson first, one should create a batch of experiments with multiple concurrent standards testing the same hypothesis. That way, these variations and complexities can be capture. </p>
+<p>Once those experiements are set up, we randomly assign students to each group and then compare how students in each group rate their activities. Then we can just start comparing the results until we see significant differences - right? Hmm…not quite…, at least according to this <a href="http://www.qubit.com/sites/default/files/pdf/most_winning_ab_test_results_are_illusory.pdf">one paper</a>, most statistically significant A/B test results are false positive signals. Another challenge with A/B Testing, since it is a continuously observed live experiment, is knowing when to stop the experiment. Our own confirmation bias tends to want to end the experiment when we see a significant result in the direction we expect. </p>
+<p>In order to prevent this bias, we need to measure <a href="https://en.wikipedia.org/wiki/Statistical_power">statistical power</a> the test, that is the likelihood of a false positive in the test. This value can be measured pretty simply when the variance is known and the outcome binary, as in the case of click-through rates. However, when we are measuring continuous variables for education, the variance and statistical power may not be known at first. We can however test this by creating multiple A/A tests (null test), as described on page 79 of <a href="http://www.webanalyticsdemystified.com/downloads/Web_Analytics_Demystified_by_Eric_Peterson.pdf">Web Analytics Demystified</a>. These are tests where both the control and test groups are identical but students are randomly assigned to groups in the same fashion as A/B testing. For these tests, we know that there are no theoretical difference between groups. Therefore, by running the experiemnts, we can see at which sample size, we can detect at which sample sizes, these false positives are common, and at what point the difference between the two groups converges to 0. </p>
+<p>The advantages of these tests is that they can give you a clear sample size marker for when you can declare a live experiment conclusive. These tests can be built and assigned in the same way as A/B tests or if you have historical data with a similar demographic, the tests can be simulated using <a href="http://en.wikipedia.org/wiki/Monte_Carlo_method">Monte Carlo Method</a>. The advantages of the latter approach is you can bootstrap as many times as you want and create a distribution of false positive likelihood at each sample size. </p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+<!--     -->
+                <div class="social">
+                        <h2>Social Cat</h2>
+                        <ul>
+
+                            <li><a href="http://github.com/catli">code</a></li>
+                            <li><a href="http://www.linkedin.com/in/cathleenli">linked-in</a></li>
+                            <li><a href="http://twitter.com/catlichatter">tweets</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

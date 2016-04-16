@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>HOW TO SCRAPE SCHOOL AND DISTRICT DATA</title>
+        <title>Scraping School and District Data</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -16,6 +16,8 @@
                 <nav><ul>
     
                         <li><a href="/pages/about.html">about</a></li>
+    
+                        <li><a href="/pages/projects.html">projects</a></li>
                     <li class="active"><a href="/category/writing.html">writing</a></li>
                 </ul>
                 </nav>
@@ -25,14 +27,14 @@
     <header>
       <h1 class="entry-title">
         <a href="/2015/how_to_scrape_school_data.html" rel="bookmark"
-           title="Permalink to HOW TO SCRAPE SCHOOL AND DISTRICT DATA">HOW TO SCRAPE SCHOOL AND DISTRICT DATA</a></h1>
+           title="Permalink to Scraping School and District Data">Scraping School and District Data</a></h1>
     </header>
 
     <div class="entry-content">
 <footer class="post-info">
         <span>Wed 01 July 2015</span>
-
-</footer><!-- /.post-info -->      <p>When working with school and district level data to evaluate student learning there are a lot of factors that could influence these variables. For example, the socioeconomic makeup of the school could impact student learning. The percentage of students qualifying for free reduced lunch is often used as a proxy for this information. This data is publicly available on the NCES website, but in a difficult to extract format. In order to get the data for a large number of schools, we have to use scrapping methods . Below is an example of application using BeautifulSoup. This starts with a csv file with nces id for districts but can be manipulated to feed in district name parameter instead.</p>
+<span>| tags: <a href="/tag/nces.html">NCES</a><a href="/tag/scrape.html">scrape</a><a href="/tag/data.html">data</a><a href="/tag/schools.html">schools</a></span>
+</footer><!-- /.post-info -->      <p>When looking at trends for school and district level data, there are many local factors that could influence outcomes. For example, variables such as a school's size or social-economic makeup could be predictors of success. Much of this data is publicly available on the National Center for Education Statistics (NCES) <a href="https://nces.ed.gov/">website</a>, but in a difficult to extract format. In order to get the data for a large number of schools, we have to use scrapping methods . Below is an example of application using BeautifulSoup. This retrieves data for all schools in districts using a csv file listing nces id for each district but can be manipulated to feed in district name parameter instead.</p>
 <p>Here are some libraries you will need to import</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="kn">import</span> <span class="nn">requests</span> 
@@ -54,7 +56,6 @@
     <span class="n">links</span><span class="o">=</span><span class="s1">&#39;http://nces.ed.gov/ccd&#39;</span><span class="o">+</span><span class="n">sublinks</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">districts</span><span class="p">,</span> <span class="n">links</span>
 
-<span class="p">:::</span><span class="n">python</span>
 <span class="k">def</span> <span class="nf">find_school</span><span class="p">(</span><span class="n">district</span><span class="p">,</span><span class="n">link</span><span class="p">):</span>
     <span class="c1">#argument: pass through the district search link</span>
     <span class="c1">#retrieves the school links and names for all the schools in district</span>
@@ -201,14 +202,14 @@
   </article>
 </section>
         <section id="extras" class="body">
-        <!--  -->
+<!--     -->
                 <div class="social">
-                        <h2>social</h2>
+                        <h2>Social Cat</h2>
                         <ul>
 
-                            <li><a href="http://github.com/catli">github</a></li>
-                            <li><a href="http://www.linkedin.com/in/cathleenli">linkedin</a></li>
-                            <li><a href="http://twitter.com/catlichatter">twitter</a></li>
+                            <li><a href="http://github.com/catli">code</a></li>
+                            <li><a href="http://www.linkedin.com/in/cathleenli">linked-in</a></li>
+                            <li><a href="http://twitter.com/catlichatter">tweets</a></li>
                         </ul>
                 </div><!-- /.social -->
         </section><!-- /#extras -->

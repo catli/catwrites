@@ -4,4 +4,7 @@ My interest in education grew from circumstances and have been fostered in the l
 
 It was not until I went back to graduate school to study statistics that I found an avenue to get involved in this subject. I am interested in the potential for open source technology to equalize access available for students with different needs and different learning styles. I am also interested in how data analytics can be a tool to match students to appropriate content and to change the way that they get feedback. 
 
-I feel luck to be able to work on these problems at Khan Academy. 
+I am currently working at Khan Academy exploring the possibilities in the intersection of technology and education. I also love such things as trail runs, occassional dance parties, and (eating, making, thinking about) ramen. 
+
+
+[Here's my laundry list of experiences...](../pages/cv.html)

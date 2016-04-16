@@ -1,8 +1,9 @@
-Title: HOW TO SCRAPE SCHOOL AND DISTRICT DATA
+Title: Scraping School and District Data
 Slug: how_to_scrape_school_data 
+Tags: NCES, scrape, data, schools
 Date: 2015-7-01
 
-When working with school and district level data to evaluate student learning there are a lot of factors that could influence these variables. For example, the socioeconomic makeup of the school could impact student learning. The percentage of students qualifying for free reduced lunch is often used as a proxy for this information. This data is publicly available on the NCES website, but in a difficult to extract format. In order to get the data for a large number of schools, we have to use scrapping methods . Below is an example of application using BeautifulSoup. This starts with a csv file with nces id for districts but can be manipulated to feed in district name parameter instead.
+When looking at trends for school and district level data, there are many local factors that could influence outcomes. For example, variables such as a school's size or social-economic makeup could be predictors of success. Much of this data is publicly available on the National Center for Education Statistics (NCES) [website](https://nces.ed.gov/), but in a difficult to extract format. In order to get the data for a large number of schools, we have to use scrapping methods . Below is an example of application using BeautifulSoup. This retrieves data for all schools in districts using a csv file listing nces id for each district but can be manipulated to feed in district name parameter instead.
 
 Here are some libraries you will need to import
 

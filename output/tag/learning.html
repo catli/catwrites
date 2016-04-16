@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>cathleen.li - learning</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">cathleen.li </a></h1>
+                <nav><ul>
+    
+                        <li><a href="/pages/about.html">about</a></li>
+    
+                        <li><a href="/pages/projects.html">projects</a></li>
+                    <li><a href="/category/writing.html">writing</a></li>
+                </ul>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/2016/how_to_measure_continuous_student_achievement.html">How to Measure Continuous Student Learning?</a></h1>
+<footer class="post-info">
+        <span>Fri 25 March 2016</span>
+<span>| tags: <a href="/tag/learning.html">learning</a><a href="/tag/growth.html">growth</a><a href="/tag/technology.html">technology</a><a href="/tag/psychometric-models.html">psychometric models</a><a href="/tag/hobbes.html">hobbes</a></span>
+</footer><!-- /.post-info --><p>Today was my last day at eSpark Learning. During my time there I had a chance to work on some interesting projects, including developing a psychometric model to measure continuous student learning, named Hobbes. eSpark posted a full writeup of my work on Medium, but here's an excerpt below: </p>
+<hr />
+<p><img alt="Hobbes" src="../article_img/hobbes.jpg" /></p>
+<p>eSpark curriculum covers pre-K to eighth grade, in both reading and math. For the sake of simplicity, in this post we’ll look closely at our work on literacy in early grades. For example, for students to gain the prerequisites necessary for reading in first grade, they need to learn a variety of pre-reading skills such as “distinguishing long from short vowel sounds in spoken single-syllable words.” Although as adults we may take this skill for granted, it can be quite complex for young students as they have to master the ability to recognize specific vowel sounds, as well as to distinguish the characteristic of these sounds.</p>
+<p>We wanted to develop a metric of student learning outcomes that was consistent, precise, and available in real time to guide curriculum development. We initially relied upon standardized tests, such as NWEA MAP, to inform our understanding of curriculum. However, while this data is very useful in shaping curriculum, it has two major limitations. First, standardized tests vary across districts, and thus can introduce bias if we compare nationally. Second, standardized tests typically only report data once or twice a year, which inhibits continuous improvement through data.</p>
+<p>We evaluated numerous psychometric item-response models developed over the last few decades to measure latent variables such as learning. Unfortunately, the traditional item response models were designed to take a snapshot of a student’s ability. Our focus is on the student’s progress over the entire school year so we are not just interested in the snapshot of a student, but in their continuous change through learning.  So, in the spirit of innovation, we have iterated on these latent variable models to develop our own approach to measuring learning. We named this measurement Hobbes, after a beloved tiger known for his rational approach to problems.</p>
+<p>Hobbes is derived from the Rasch model, an item response model used since the 1960s to measure a test taker’s ability and the probability they would answer a question correctly. Northwest Evaluation Association (NWEA), a non-profit testing provider used by districts across the country, adopted this model to generate their RIT score for each student on their MAP Assessment. The model is more robust than calculating the average percentage correct because it accounts for both varying student ability and different question difficulty levels.  It uses a logistic curve (see below) to translate two parameters - student ability and question difficulty - into the probability a student would answer a question correctly (between 0 and 1). </p>
+<h2>How does the Rasch Model work?</h2>
+<p>This  curve is described by the function below. Given a certain question difficulty i and a certain student ability n, the function estimates the expected probability that the student would answer the question correctly:</p>
+<div class="math">\begin{equation}  \hat{p}_{in} =  P(x_{i,n}= 1) = \frac{e^{ \beta_n + \theta_i }}{1 +e^{ \beta_n + \theta_i }}  \end{equation}</div>
+<p>Notice that as as the student ability decreases relative to question difficulty, the probability function approaches 0.  Conversely as student ability increases relative to question difficulty, the probability function approaches 1. Both the question and student ability parameters are normalized around the mean so a value of  n=i=0 would translate to a 50% chance of answering an answer correctly. </p>
+<p>When we feed student quiz data into the model, it can estimate the ability parameters n and difficulty parameter  <span class="math">\(i\)</span> by minimizing the difference between actual and predicted values  <span class="math">\(X_{in}-\hat{p}_{in}\)</span>. These parameters provide a snapshot of how difficult the questions were and the relative ability of the students at the time the data was collected.</p>
+<h2>So how did we adapt the Rasch model to measure student growth?</h2>
+<p>The typical student working on eSpark takes both a pre- and post- quiz for each standard. If a student needs practice in reading foundational skills, we assign them to practice activities in these learning standards. Before each set of activities, the student take a prequiz with 5 questions drawn randomly from K unique questions. After their practice activities, they are then given a post-quiz with a new set of 5 questions. </p>
+<p>These pre and post quiz questions are all developed to measure their ability master the relevant standard. If all the questions in our quiz bank had identical question difficulty level, we would be able to take the difference in average correct to measure the student growth. However, that is not the case, nor do we want that to be the case - having varying difficulty levels allow us to measure a range of ability levels. </p>
+<p>To control for question difficulty, Hobbes finds the difference between a student’s postquiz score and the Hobbes prediction of their postquiz score. The Hobbes-predicted postquiz score is calculated given a student’s prequiz ability and the postquiz question difficulty.  </p>
+<div class="math">\begin{equation}   \mbox{hobbes growth} = \frac{1}{I} \sum_{i}^{I=5}( X_{postquiz, in} - P( X_{postquiz, in} =1 | \theta_i, \beta_n ) ) \end{equation}</div>
+<p>By using this new metric, we create a measure that is comparable across students with different ability levels, and across questions with different difficulty levels. </p>
+<p>We are also aware that different questions may target different skills contributing to the same learning standards. For example, the distinguishing vowel sounds learning standard can only be mastered if students can identify both short and long vowel sounds. By generating a Hobbes growth by question, we are able to aggregate across these different skills. When we reviewed the Hobbes results for this same reading standard, we noticed that students are much more adept at learning to identify long vowel sounds than short vowel sounds. </p>
+<p>This type of information helps to inform what apps and activities we should focus on providing students and how to frame their learning experience. These insights have been invaluable in our work to improve our impact on students.  Being able to accurately detect the magnitude of learning not only allows us to continuously iterate and improve on our curriculum, but it also allow us to give better feedback to students. Not only can we give student pointed feedback on what skills they have mastered and what skills they need more practice on, but it also opens up the potential to more quickly adapt learning content to their needs. </p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' }, Macros: {} }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/2015/curiosity_arise_in_classrooms.html" rel="bookmark"
+                           title="Permalink to Why are Some Students More Curious?">Why are Some Students More Curious?</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>Tue 01 December 2015</span>
+<span>| tags: <a href="/tag/curiosity.html">curiosity</a><a href="/tag/assessment.html">assessment</a><a href="/tag/motivation.html">motivation</a><a href="/tag/learning.html">learning</a></span>
+</footer><!-- /.post-info -->                <p>I convene regularly with a couple of friends who are also passionate about education to explore topics in education, technology and learning. This is an excerpt of one write-up where we explore a topic of special interests for all of us. What is curiosity? And how does it arise in ...</p>
+                <a class="readmore" href="/2015/curiosity_arise_in_classrooms.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/2015/how_edtech_can_use_ab_testing.html" rel="bookmark"
+                           title="Permalink to How Education Technology can Measure Learning with A/B Testing?">How Education Technology can Measure Learning with A/B Testing?</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>Sun 01 February 2015</span>
+<span>| tags: <a href="/tag/edtech.html">Edtech</a><a href="/tag/ab-testing.html">AB Testing</a><a href="/tag/learning.html">Learning</a><a href="/tag/efficacy.html">Efficacy</a><a href="/tag/aa-testing.html">AA Testing</a></span>
+</footer><!-- /.post-info -->                <p>Whereas educational studies have traditionally been large-scaled controlled experiments, internet technology has introduced fast-cycled approaches to efficacy testing. Education technology can be the intersection where the theoretical under-pinning of educational experiments can be combined with the faster-cycled approaches of such approaches as A/B Testing. </p>
+<p>A/B Testing is a ...</p>
+                <a class="readmore" href="/2015/how_edtech_can_use_ab_testing.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+<!--     -->
+                <div class="social">
+                        <h2>Social Cat</h2>
+                        <ul>
+
+                            <li><a href="http://github.com/catli">code</a></li>
+                            <li><a href="http://www.linkedin.com/in/cathleenli">linked-in</a></li>
+                            <li><a href="http://twitter.com/catlichatter">tweets</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
